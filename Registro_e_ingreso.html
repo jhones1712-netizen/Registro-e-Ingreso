@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login y Registro</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+  }
+
+  .contenedor {
+    background: #ffffff;
+    padding: 35px 30px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 400px;
+    animation: aparecer 0.5s ease;
+  }
+
+  @keyframes aparecer {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Pestañas */
+  .tabs {
+    display: flex;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #eee;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+  }
+
+  .tab.activo {
+    color: #667eea;
+    border-bottom: 3px solid #667eea;
+  }
+
+  .tab:hover {
+    color: #667eea;
+  }
+
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  .campo {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+
+  button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(102, 126, 234, 0.45);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .mensaje {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    display: none;
+  }
+
+  .mensaje.error {
+    display: block;
+    background: #ffe6e6;
+    color: #c0392b;
+    border: 1px solid #f5b7b1;
+  }
+
+  .mensaje.exito {
+    display: block;
+    background: #e8f8f5;
+    color: #1e8449;
+    border: 1px solid #a9dfbf;
+  }
+
+  /* Pantalla de bienvenida */
+  #bienvenida {
+    display: none;
+    text-align: center;
+  }
+
+  #bienvenida .icono {
+    font-size: 55px;
+    margin-bottom: 12px;
+  }
+
+  #bienvenida h2 {
+    color: #27ae60;
+    margin-bottom: 10px;
+  }
+
+  #bienvenida p {
+    color: #555;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .btn-salir {
+    margin-top: 22px;
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  }
+
+  .btn-salir:hover {
+    box-shadow: 0 8px 18px rgba(127, 140, 141, 0.45);
+  }
+
+  .oculto {
+    display: none !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="contenedor">
+
+  <!-- ===== PESTAÑAS ===== -->
+  <div class="tabs" id="tabs">
+    <div class="tab activo" data-tab="login">Iniciar Sesión</div>
+    <div class="tab" data-tab="registro">Registrarse</div>
+  </div>
+
+  <!-- ===== FORMULARIO DE LOGIN ===== -->
+  <div id="vista-login">
+    <h2>🔐 Iniciar Sesión</h2>
+
+    <form id="loginForm">
+      <div class="campo">
+        <label for="usuarioLogin">Usuario</label>
+        <input type="text" id="usuarioLogin" placeholder="Escribe tu usuario" autocomplete="off">
+      </div>
+
+      <div class="campo">
+        <label for="claveLogin">Clave</label>
+        <input type="password" id="claveLogin" placeholder="Escribe tu clave">
+      </div>
+
+      <button type="submit">Ingresar</button>
+    </form>
+
+    <div id="mensajeLogin" class="mensaje"></div>
+  </div>
+
+  <!-- ===== FORMULARIO DE REGISTRO ===== -->
+  <div id="vista-registro" class="oculto">
+    <h2>📝 Crear Cuenta</h2>
+
+    <form id="registroForm">
+      <div class="campo">
+        <label for="usuarioReg">Usuario</label>
+        <input type="text" id="usuarioReg" placeholder="Elige un usuario" autocomplete="off">
+      </div>
+
+      <div class="campo">
+        <label for="claveReg">Clave</label>
+        <input type="password" id="claveReg" placeholder="Crea una clave">
+      </div>
+
+      <div class="campo">
+        <label for="claveReg2">Confirmar Clave</label>
+        <input type="password" id="claveReg2" placeholder="Repite la clave">
+      </div>
+
+      <button type="submit">Registrarse</button>
+    </form>
+
+    <div id="mensajeRegistro" class="mensaje"></div>
+  </div>
+
+  <!-- ===== PANTALLA DE BIENVENIDA ===== -->
+  <div id="bienvenida">
+    <div class="icono">🎉</div>
+    <h2>¡Felicitaciones!</h2>
+    <p id="textoBienvenida">Has ingresado correctamente al sistema.</p>
+    <button class="btn-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // 1. GESTIÓN DE USUARIOS EN LOCALSTORAGE
+  // ============================================================
+  const STORAGE_KEY = "usuarios_app";
+
+  // Usuario por defecto si no hay ninguno guardado
+  function inicializarUsuarios() {
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      const usuariosIniciales = [
+        { usuario: "admin", clave: "1234" }
+      ];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(usuariosIniciales));
+    }
+  }
+
+  function obtenerUsuarios() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  }
+
+  function guardarUsuarios(usuarios) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(usuarios));
+  }
+
+  // Inicializar al cargar
+  inicializarUsuarios();
+
+  // ============================================================
+  // 2. REFERENCIAS AL DOM
+  // ============================================================
+  const tabs         = document.querySelectorAll(".tab");
+  const vistaLogin   = document.getElementById("vista-login");
+  const vistaRegistro= document.getElementById("vista-registro");
+  const bienvenida   = document.getElementById("bienvenida");
+  const tabsContenedor = document.getElementById("tabs");
+
+  const loginForm    = document.getElementById("loginForm");
+  const registroForm = document.getElementById("registroForm");
+
+  const mensajeLogin    = document.getElementById("mensajeLogin");
+  const mensajeRegistro = document.getElementById("mensajeRegistro");
+
+  // ============================================================
+  // 3. CAMBIO DE PESTAÑAS
+  // ============================================================
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const destino = tab.dataset.tab;
+
+      // Activar pestaña
+      tabs.forEach(t => t.classList.remove("activo"));
+      tab.classList.add("activo");
+
+      // Mostrar vista correspondiente
+      if (destino === "login") {
+        vistaLogin.classList.remove("oculto");
+        vistaRegistro.classList.add("oculto");
+      } else {
+        vistaLogin.classList.add("oculto");
+        vistaRegistro.classList.remove("oculto");
+      }
+
+      // Limpiar mensajes
+      mensajeLogin.className = "mensaje";
+      mensajeRegistro.className = "mensaje";
+    });
+  });
+
+  // ============================================================
+  // 4. REGISTRO DE NUEVO USUARIO
+  // ============================================================
+  registroForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const usuario = document.getElementById("usuarioReg").value.trim();
+    const clave   = document.getElementById("claveReg").value;
+    const clave2  = document.getElementById("claveReg2").value;
+
+    // Validar campos vacíos
+    if (!usuario || !clave || !clave2) {
+      mostrarMensaje(mensajeRegistro, "⚠️ Todos los campos son obligatorios.", "error");
+      return;
+    }
+
+    // Validar que las claves coincidan
+    if (clave !== clave2) {
+      mostrarMensaje(mensajeRegistro, "❌ Las claves no coinciden.", "error");
+      return;
+    }
+
+    // Validar que el usuario no exista
+    const usuarios = obtenerUsuarios();
+    const existe = usuarios.some(u => u.usuario.toLowerCase() === usuario.toLowerCase());
+    if (existe) {
+      mostrarMensaje(mensajeRegistro, "❌ El usuario ya está registrado. Elige otro.", "error");
+      return;
+    }
+
+    // Guardar nuevo usuario
+    usuarios.push({ usuario, clave });
+    guardarUsuarios(usuarios);
+
+    mostrarMensaje(mensajeRegistro, "✅ ¡Registro exitoso! Ahora puedes iniciar sesión.", "exito");
+
+    // Limpiar formulario
+    registroForm.reset();
+
+    // Opcional: cambiar a pestaña de login después de 1.5 segundos
+    setTimeout(() => {
+      document.querySelector('.tab[data-tab="login"]').click();
+      // Prellenar el usuario en el login
+      document.getElementById("usuarioLogin").value = usuario;
+      document.getElementById("claveLogin").focus();
+    }, 1500);
+  });
+
+  // ============================================================
+  // 5. INICIO DE SESIÓN
+  // ============================================================
+  loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const usuario = document.getElementById("usuarioLogin").value.trim();
+    const clave   = document.getElementById("claveLogin").value;
+
+    // Validar campos vacíos
+    if (!usuario || !clave) {
+      mostrarMensaje(mensajeLogin, "⚠️ Por favor, complete usuario y clave.", "error");
+      return;
+    }
+
+    // Buscar usuario en localStorage
+    const usuarios = obtenerUsuarios();
+    const encontrado = usuarios.find(u => u.usuario === usuario && u.clave === clave);
+
+    if (encontrado) {
+      // Éxito
+      ingresarCorrectamente(encontrado.usuario);
+    } else {
+      mostrarMensaje(mensajeLogin, "❌ Usuario o clave incorrectos. Intente de nuevo.", "error");
+      document.getElementById("claveLogin").value = "";
+      document.getElementById("claveLogin").focus();
+    }
+  });
+
+  // ============================================================
+  // 6. FUNCIONES AUXILIARES
+  // ============================================================
+  function mostrarMensaje(elemento, texto, tipo) {
+    elemento.textContent = texto;
+    elemento.className = "mensaje " + tipo;
+  }
+
+  function ingresarCorrectamente(usuario) {
+    // Ocultar formularios y pestañas
+    document.getElementById("tabs").style.display = "none";
+    vistaLogin.classList.add("oculto");
+    vistaRegistro.classList.add("oculto");
+
+    // Mostrar bienvenida
+    bienvenida.style.display = "block";
+    document.getElementById("textoBienvenida").innerHTML =
+      `¡Felicitaciones <b>${usuario}</b> por tu ingreso!<br>Has accedido al sistema correctamente. 👏`;
+  }
+
+  function cerrarSesion() {
+    // Restaurar vista de login
+    bienvenida.style.display = "none";
+    document.getElementById("tabs").style.display = "flex";
+    vistaLogin.classList.remove("oculto");
+    vistaRegistro.classList.add("oculto");
+
+    // Activar pestaña de login
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("activo"));
+    document.querySelector('.tab[data-tab="login"]').classList.add("activo");
+
+    // Limpiar formularios y mensajes
+    loginForm.reset();
+    registroForm.reset();
+    mensajeLogin.className = "mensaje";
+    mensajeRegistro.className = "mensaje";
+
+    document.getElementById("usuarioLogin").focus();
+  }
+
+  // Enfocar el primer campo al cargar
+  document.getElementById("usuarioLogin").focus();
+</script>
+
+</body>
+</html>
